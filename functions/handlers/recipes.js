@@ -186,3 +186,26 @@ exports.unlikeRecipe = (req, res) => {
         res.status(500).json({ error: err.code});
     });
 };
+
+// delete recipe
+exports.deleteRecipe = (req, res) => {
+    const document = db.doc(`/recipes/${req.params.recipeId}`);
+    document.get()
+    .then(doc => {
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'recipe not found'});
+        }
+        if (doc.data().userHandle !== req.user.handle) {
+            return res.status(403).json({ error: 'unauthorized'});
+        } else {
+            return document.delete();
+        }
+    })
+    .then(() => {
+        res.json({ message: 'recipe deleted successfully'});
+    })
+    .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: err.code});
+    });
+};
