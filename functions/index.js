@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const app = require('express')();
 
-const { getAllRecipes, postOneRecipe, getRecipe} = require('./handlers/recipes');
+const { getAllRecipes, postOneRecipe, getRecipe, commentOnRecipe, likeRecipe, unlikeRecipe} = require('./handlers/recipes');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser} = require('./handlers/users');
 
 const FBAuth = require('./util/fbAuth');
@@ -11,9 +11,9 @@ app.get('/recipes', getAllRecipes);
 app.post('/recipe', FBAuth, postOneRecipe);
 app.get('/recipe/:recipeId', getRecipe);
 // TODO: Delete recipe
-// TODO: Like a recipe
-// TODO: Unlike a recipe
-// TODO: Comment on recipe
+app.get('/recipe/:recipeId/like', FBAuth, likeRecipe);
+app.get('/recipe/:recipeId/unlike', FBAuth, unlikeRecipe);
+app.post('/recipe/:recipeId/comment', FBAuth, commentOnRecipe);
 
 // users route
 app.post('/signup', signup);
