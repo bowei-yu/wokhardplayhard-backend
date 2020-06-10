@@ -27,7 +27,15 @@ let db = {
             body: 'nice one! love the taste',
             createdAt: '2011-10-05T14:48:00.000Z'
         }
-    ]
+    ],
+    notifications: [{
+        recipient: 'user',
+        sender: 'john',
+        read: 'true | false',
+        recipeId: 'jfjshfjabhbadhjf'
+        type: 'like | comment',
+        createdAt: '2011-10-05T14:48:00.000Z'
+    }]
 };
 
 const userDetails = {
