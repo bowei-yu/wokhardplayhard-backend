@@ -31,9 +31,9 @@ exports.api = functions.region('asia-east2').https.onRequest(app);
 
 exports.createNotificationOnLike = functions.region('asia-east2').firestore.document('likes/{id}')
 .onCreate((snapshot) => {
-    db.doc(`/recipes/${snapshot.data().recipeId}`).get()
+    return db.doc(`/recipes/${snapshot.data().recipeId}`).get()
     .then((doc) => {
-        if (doc.exists) {
+        if (doc.exists && doc.data.userHandle !== snapshot.data().userHandle) {
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
@@ -44,22 +44,15 @@ exports.createNotificationOnLike = functions.region('asia-east2').firestore.docu
             });
         }
     })
-    .then(() => {
-        return;
-    })
     .catch(err => {
         console.error(err);
-        return;
     });
 });
 
 
 exports.deleteNotificationOnUnlike = functions.region('asia-east2').firestore.document('likes/{id}')
 .onDelete((snapshot) => {
-    db.doc(`/notifications/${snapshot.id}`).delete()
-    .then(() => {
-        return;
-    })
+    return db.doc(`/notifications/${snapshot.id}`).delete()
     .catch(err => {
         console.error(err => {
             console.error(err);
@@ -71,9 +64,9 @@ exports.deleteNotificationOnUnlike = functions.region('asia-east2').firestore.do
 
 exports.createNotificationOnComment = functions.region('asia-east2').firestore.document('comments/{id}')
 .onCreate((snapshot) => {
-    db.doc(`/recipes/${snapshot.data().recipeId}`).get()
+    return db.doc(`/recipes/${snapshot.data().recipeId}`).get()
     .then(doc => {
-        if (doc.exists) {
+        if (doc.exists && doc.data.userHandle !== snapshot.data().userHandle) {
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
@@ -84,11 +77,54 @@ exports.createNotificationOnComment = functions.region('asia-east2').firestore.d
             })
         }
     })
-    .then(() => {
-        return;
-    })
     .catch(err => {
         console.error(err);
         return;
     });
+});
+
+exports.onUserImageChange = functions.region('asia-east2').firestore.document('/users/{userId}')
+.onUpdate(change => {
+    console.log(change.before.data());
+    console.log(change.after.data());
+    if (change.before.data().imageUrl !== change.after.data().imageUrl) {
+        console.log('image has changed');
+        const batch = db.batch();
+        return db.collection('recipes').where('userHandle', '==', change.before.data().handle).get()
+        .then(data => {
+            data.forEach(doc => {
+                const recipe = db.doc(`/recipes/${doc.id}`);
+                batch.update(recipe, { userImage: change.after.data().imageUrl});
+            });
+            return batch.commit();
+        });
+    } else return true;
+});
+
+
+exports.onRecipeDelete = functions.region('asia-east2').firestore.document('/recipes/{recipeId}')
+.onDelete((snapshot, context) => {
+    const recipeId = context.params.recipeId;
+    const batch = db.batch();
+    return db.collection('comments').where('recipeId', '==', recipeId)
+    .get()
+    .then(data => {
+        data.forEach(doc => {
+            batch.delete(db.doc(`/comments/${doc.id}`));
+        });
+        return db.collection('likes').where('recipeId', '==', recipeId).get();
+    })
+    .then(data => {
+        data.forEach(doc => {
+            batch.delete(db.doc(`/likes/${doc.id}`));
+        });
+        return db.collection('notifications').where('recipeId', '==', recipeId).get();
+    })
+    .then(data => {
+        data.forEach(doc => {
+            batch.delete(db.doc(`/notifications/${doc.id}`));
+        });
+        return batch.commit();
+    })
+    .catch(err => console.error(err));
 });
