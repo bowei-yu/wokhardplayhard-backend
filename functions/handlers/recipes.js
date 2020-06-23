@@ -25,6 +25,13 @@ exports.getAllRecipes = (req, res) => {
 
 
 exports.postOneRecipe = (req, res) => {
+
+    if (req.body.body.trim() === '') {
+        return res.status(400).json({
+            body: 'body must not be empty'
+        });
+    };
+
     const newRecipe = {
         body: req.body.body,
         userHandle: req.user.handle,
@@ -78,7 +85,7 @@ exports.getRecipe = (req, res) => {
 
 // comment on a recipe
 exports.commentOnRecipe = (req, res) => {
-    if (req.body.body.trim() === '') return res.status(400).json({ error: 'must not be empty'});
+    if (req.body.body.trim() === '') return res.status(400).json({ comment: 'must not be empty'});
 
     const newComment = {
         body: req.body.body,
