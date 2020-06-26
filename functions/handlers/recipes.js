@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 
 exports.getAllRecipes = (req, res) => {
     db.collection('recipes')
-    .orderBy('createdAt', 'desc')
+    .orderBy('likeCount', 'desc')
     .get()
     .then(data => {
         let recipes = [];
@@ -133,7 +133,7 @@ exports.rateDifficulty = (req, res) => {
         }
         return doc.ref.update({ 
             noOfRates: doc.data().noOfRates + 1,
-            difficultyRating: (doc.data().difficultyRating + newRating.body)/(doc.data().noOfRates + 1)
+            difficultyRating: (doc.data().difficultyRating + newRating.body)/(noOfRates)
         });
     })
     .then(() => {
