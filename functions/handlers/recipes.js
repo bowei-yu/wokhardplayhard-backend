@@ -15,7 +15,8 @@ exports.getAllRecipes = (req, res) => {
                 createdAt: doc.data().createdAt,
                 commentCount: doc.data().commentCount,
                 likeCount: doc.data().likeCount,
-                userImage: doc.data().userImage
+                userImage: doc.data().userImage,
+                difficultyRating: doc.data().difficultyRating
             });
         });
         return res.json(recipes);
@@ -118,7 +119,7 @@ exports.commentOnRecipe = (req, res) => {
 
 // rate recipe difficulty out of 10
 exports.rateDifficulty = (req, res) => {
-    if (!req.body.body) return res.status(400).json({ rating: 'must be between 1 to 10'});
+    if (req.body.body < 1 || req.body.body > 10) return res.status(400).json({ rating: 'must be between 1 to 10'});
 
     const newRating = {
         body: req.body.body,
@@ -142,7 +143,7 @@ exports.rateDifficulty = (req, res) => {
         res.json(newRating);
     })
     .catch(err => {
-        console.log(err);
+        console.err(err);
         res.status(500).json({ error: 'something went wrong'});
     });
 };
