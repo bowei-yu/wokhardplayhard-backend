@@ -7,6 +7,8 @@ const { getAllRecipes, postOneRecipe, getRecipe, commentOnRecipe, likeRecipe, un
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser, getUserDetails, markNotificationsRead} = require('./handlers/users');
 
 const FBAuth = require('./util/fbAuth');
+const cors = require('cors');
+app.use(cors());
 
 // recipe routes
 app.get('/recipes', getAllRecipes);
