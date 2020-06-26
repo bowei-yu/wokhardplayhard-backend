@@ -38,7 +38,9 @@ exports.postOneRecipe = (req, res) => {
         userImage: req.user.imageUrl,
         createdAt: new Date().toISOString(),
         likeCount: 0,
-        commentCount: 0
+        commentCount: 0,
+        difficultyRating: 0,
+        noOfRates: 0
     };
     db.collection('recipes')
     .add(newRecipe)
@@ -110,6 +112,37 @@ exports.commentOnRecipe = (req, res) => {
     })
     .catch(err => {
         console.error(err);
+        res.status(500).json({ error: 'something went wrong'});
+    });
+};
+
+// rate recipe difficulty out of 10
+exports.rateDifficulty = (req, res) => {
+    if (!req.body.body) return res.status(400).json({ rating: 'must be between 1 to 10'});
+
+    const newRating = {
+        body: req.body.body,
+        recipeId: req.params.recipeId
+    };
+
+    db.doc(`/recipes/${req.params.recipeId}`).get()
+    .then(doc => {
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'recipe not found'});
+        }
+        return doc.ref.update({ 
+            noOfRates: doc.data().noOfRates + 1,
+            difficultyRating: (doc.data().difficultyRating + newRating.body)/(doc.data().noOfRates + 1)
+        });
+    })
+    .then(() => {
+        return db.collection('difficulty').add(newRating);
+    })
+    .then(() => {
+        res.json(newRating);
+    })
+    .catch(err => {
+        console.log(err);
         res.status(500).json({ error: 'something went wrong'});
     });
 };
