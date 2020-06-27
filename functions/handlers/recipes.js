@@ -133,7 +133,7 @@ exports.rateDifficulty = (req, res) => {
         }
         return doc.ref.update({ 
             noOfRates: doc.data().noOfRates + 1,
-            difficultyRating: (doc.data().difficultyRating + newRating.body)/(noOfRates)
+            difficultyRating: (doc.data().difficultyRating + newRating.body)/(doc.data().noOfRates + 1)
         });
     })
     .then(() => {

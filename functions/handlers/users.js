@@ -127,7 +127,8 @@ exports.getUserDetails = (req, res) => {
                 userImage: doc.data().userImage,
                 likeCount: doc.data().likeCount,
                 commentCount: doc.data().commentCount,
-                recipeId: doc.id
+                recipeId: doc.id,
+                difficultyRating: doc.data().difficultyRating
             });
         });
         return res.json(userData);
