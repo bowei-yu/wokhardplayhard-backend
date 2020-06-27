@@ -127,6 +127,12 @@ exports.onRecipeDelete = functions.region('asia-east2').firestore.document('/rec
         data.forEach(doc => {
             batch.delete(db.doc(`/notifications/${doc.id}`));
         });
+        return db.collection('difficulty').where('recipeId', '==', recipeId).get();
+    })
+    .then(data => {
+        data.forEach(doc => {
+            batch.delete(db.doc(`/difficulty/${doc.id}`));
+        });
         return batch.commit();
     })
     .catch(err => console.error(err));
