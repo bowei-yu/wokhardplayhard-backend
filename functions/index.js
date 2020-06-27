@@ -36,7 +36,7 @@ exports.createNotificationOnLike = functions.region('asia-east2').firestore.docu
 .onCreate((snapshot) => {
     return db.doc(`/recipes/${snapshot.data().recipeId}`).get()
     .then((doc) => {
-        if (doc.exists && doc.data.userHandle !== snapshot.data().userHandle) {
+        if (doc.exists && doc.data().userHandle !== snapshot.data().userHandle) {
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
@@ -69,7 +69,7 @@ exports.createNotificationOnComment = functions.region('asia-east2').firestore.d
 .onCreate((snapshot) => {
     return db.doc(`/recipes/${snapshot.data().recipeId}`).get()
     .then(doc => {
-        if (doc.exists && doc.data.userHandle !== snapshot.data().userHandle) {
+        if (doc.exists && doc.data().userHandle !== snapshot.data().userHandle) {
             return db.doc(`/notifications/${snapshot.id}`).set({
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
