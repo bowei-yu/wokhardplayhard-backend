@@ -77,6 +77,14 @@ exports.getRecipe = (req, res) => {
         data.forEach(doc => {
             recipeData.comments.push(doc.data());
         });
+        return db.collection('difficulty')
+        .where('recipeId', '==', req.params.recipeId).get();
+    })
+    .then(data => {
+        recipeData.difficulty = [];
+        data.forEach(doc => {
+            recipeData.difficulty.push(doc.data());
+        });
         return res.json(recipeData);
     })
     .catch(err => {
@@ -133,7 +141,7 @@ exports.rateDifficulty = (req, res) => {
         }
         return doc.ref.update({ 
             noOfRates: doc.data().noOfRates + 1,
-            difficultyRating: (doc.data().difficultyRating + newRating.body)/(doc.data().noOfRates + 1)
+            difficultyRating: (doc.data().difficultyRating * doc.data().noOfRates + newRating.body)/(doc.data().noOfRates + 1)
         });
     })
     .then(() => {
@@ -143,7 +151,7 @@ exports.rateDifficulty = (req, res) => {
         res.json(newRating);
     })
     .catch(err => {
-        console.err(err);
+        console.error(err);
         res.status(500).json({ error: 'something went wrong'});
     });
 };
