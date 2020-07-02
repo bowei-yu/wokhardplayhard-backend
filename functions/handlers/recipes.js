@@ -261,3 +261,26 @@ exports.deleteRecipe = (req, res) => {
         return res.status(500).json({ error: err.code});
     });
 };
+
+// delete comment
+exports.deleteComment = (req, res) => {
+    const document = db.doc(`/comments/${req.params.commentId}`);
+    document.get()
+    .then(doc => {
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'comment not found'});
+        }
+        if (doc.data().userHandle !== req.user.handle) {
+            return res.status(403).json({ error: 'unauthorized'});
+        } else {
+            return document.delete();
+        }
+    })
+    .then(() => {
+        res.json({ message: 'comment deleted successfully'});
+    })
+    .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: err.code});
+    });
+};
