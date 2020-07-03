@@ -75,8 +75,15 @@ exports.getRecipe = (req, res) => {
     .then(data => {
         recipeData.comments = [];
         data.forEach(doc => {
-            recipeData.comments.push(doc.data());
-        });
+            recipeData.comments.push({
+                    body: doc.data().body,
+                    createdAt: doc.data().createdAt,
+                    recipeId: doc.data().recipeId,
+                    userHandle: doc.data().userHandle,
+                    userImage: doc.data().userImage,
+                    commentId: doc.id
+                });
+            });
         return db.collection('difficulty')
         .where('recipeId', '==', req.params.recipeId).get();
     })
@@ -275,6 +282,15 @@ exports.deleteComment = (req, res) => {
         } else {
             return document.delete();
         }
+    })
+    .then(() => {
+        db.doc(`/recipes/${req.params.recipeId}`).get()
+        .then(doc => {
+            if (!doc.exists) {
+                return res.status(404).json({ error: 'recipe not found'});
+            }
+            return doc.ref.update({ commentCount: doc.data().commentCount - 1});
+        })
     })
     .then(() => {
         res.json({ message: 'comment deleted successfully'});
