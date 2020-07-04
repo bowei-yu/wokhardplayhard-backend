@@ -138,3 +138,14 @@ exports.onRecipeDelete = functions.region('asia-east2').firestore.document('/rec
     })
     .catch(err => console.error(err));
 });
+
+exports.deleteNotificationOnCommentDelete = functions.region('asia-east2').firestore.document('comments/{commentId}')
+.onDelete((snapshot) => {
+    return db.doc(`/notifications/${snapshot.id}`).delete()
+    .catch(err => {
+        console.error(err => {
+            console.error(err);
+            return;
+        })
+    })
+})
