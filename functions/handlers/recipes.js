@@ -302,3 +302,26 @@ exports.deleteComment = (req, res) => {
         return res.status(500).json({ error: err.code});
     });
 };
+
+// edit recipe
+exports.editRecipe = (req, res) => {
+    if (!req.body.body) {
+        return res.status(403).json({ error: 'not allowed to edit'});
+    }
+    db.doc(`/recipes/${req.params.recipeId}`).get()
+    .then(doc => {
+        if (!doc.exists) {
+            return res.status(404).json({ error: 'recipe not found'});
+        }
+        return doc.ref.update({ 
+            body: req.body.body
+        });
+    })
+    .then(() => {
+        res.json({ message: 'post edited successfully'});
+    })
+    .catch((err) => {
+        console.error(err);
+        return res.status(500).json({ error: err.code });
+    });
+};

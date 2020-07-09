@@ -3,7 +3,7 @@ const app = require('express')();
 
 const { db } = require('./util/admin');
 
-const { getAllRecipes, postOneRecipe, getRecipe, commentOnRecipe, likeRecipe, unlikeRecipe, deleteRecipe, rateDifficulty, deleteComment} = require('./handlers/recipes');
+const { getAllRecipes, postOneRecipe, getRecipe, commentOnRecipe, likeRecipe, unlikeRecipe, deleteRecipe, rateDifficulty, deleteComment, editRecipe} = require('./handlers/recipes');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser, getUserDetails, markNotificationsRead} = require('./handlers/users');
 
 const FBAuth = require('./util/fbAuth');
@@ -20,6 +20,7 @@ app.get('/recipe/:recipeId/unlike', FBAuth, unlikeRecipe);
 app.post('/recipe/:recipeId/comment', FBAuth, commentOnRecipe);
 app.post('/recipe/:recipeId/rate', FBAuth, rateDifficulty);
 app.delete('/recipe/:recipeId/comment/:commentId', FBAuth, deleteComment);
+app.put('/recipe/:recipeId', FBAuth, editRecipe);
 
 // users route
 app.post('/signup', signup);
