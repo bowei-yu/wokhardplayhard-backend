@@ -124,6 +124,7 @@ exports.getUserDetails = (req, res) => {
                 title: doc.data().title,
                 ingredients: doc.data().ingredients,
                 cookTime: doc.data().cookTime,
+                videoLink: doc.data().videoLink,
                 body: doc.data().body,
                 createdAt: doc.data().createdAt,
                 userHandle: doc.data().userHandle,

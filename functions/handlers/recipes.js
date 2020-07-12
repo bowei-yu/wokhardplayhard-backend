@@ -13,6 +13,7 @@ exports.getAllRecipes = (req, res) => {
                 title: doc.data().title,
                 ingredients: doc.data().ingredients,
                 cookTime: doc.data().cookTime,
+                videoLink: doc.data().videoLink,
                 body: doc.data().body,
                 userHandle: doc.data().userHandle,
                 createdAt: doc.data().createdAt,
@@ -46,6 +47,7 @@ exports.postOneRecipe = (req, res) => {
         title: req.body.title,
         ingredients: req.body.ingredients,
         cookTime: req.body.cookTime,
+        videoLink: req.body.videoLink,
         body: req.body.body,
         userHandle: req.user.handle,
         userImage: req.user.imageUrl,
@@ -329,6 +331,7 @@ exports.editRecipe = (req, res) => {
             title: req.body.title,
             cookTime: req.body.cookTime,
             ingredients: req.body.ingredients,
+            videoLink: req.body.videoLink,
             body: req.body.body
         });
     })
