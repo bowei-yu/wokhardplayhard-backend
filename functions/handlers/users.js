@@ -121,6 +121,9 @@ exports.getUserDetails = (req, res) => {
         userData.recipes = [];
         data.forEach(doc => {
             userData.recipes.push({
+                title: doc.data().title,
+                ingredients: doc.data().ingredients,
+                cookTime: doc.data().cookTime,
                 body: doc.data().body,
                 createdAt: doc.data().createdAt,
                 userHandle: doc.data().userHandle,

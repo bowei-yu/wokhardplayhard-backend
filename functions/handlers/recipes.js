@@ -10,6 +10,9 @@ exports.getAllRecipes = (req, res) => {
         data.forEach(doc => {
             recipes.push({
                 recipeId: doc.id,
+                title: doc.data().title,
+                ingredients: doc.data().ingredients,
+                cookTime: doc.data().cookTime,
                 body: doc.data().body,
                 userHandle: doc.data().userHandle,
                 createdAt: doc.data().createdAt,
@@ -27,6 +30,12 @@ exports.getAllRecipes = (req, res) => {
 
 exports.postOneRecipe = (req, res) => {
 
+    if (req.body.title.trim() === '') {
+        return res.status(400).json({
+            title: 'title must not be empty'
+        });
+    };
+    
     if (req.body.body.trim() === '') {
         return res.status(400).json({
             body: 'body must not be empty'
@@ -34,6 +43,9 @@ exports.postOneRecipe = (req, res) => {
     };
 
     const newRecipe = {
+        title: req.body.title,
+        ingredients: req.body.ingredients,
+        cookTime: req.body.cookTime,
         body: req.body.body,
         userHandle: req.user.handle,
         userImage: req.user.imageUrl,
@@ -314,6 +326,9 @@ exports.editRecipe = (req, res) => {
             return res.status(404).json({ error: 'recipe not found'});
         }
         return doc.ref.update({ 
+            title: req.body.title,
+            cookTime: req.body.cookTime,
+            ingredients: req.body.ingredients,
             body: req.body.body
         });
     })
