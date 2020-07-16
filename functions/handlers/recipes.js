@@ -57,6 +57,13 @@ exports.postOneRecipe = (req, res) => {
         difficultyRating: 0,
         noOfRates: 0
     };
+
+    // update EXP
+    db.doc(`/users/${req.user.handle}`).get()
+    .then(doc => {
+        return doc.ref.update({ EXP: doc.data().EXP + 50});
+    });
+
     db.collection('recipes')
     .add(newRecipe)
     .then(doc => {
@@ -126,6 +133,12 @@ exports.commentOnRecipe = (req, res) => {
         userHandle: req.user.handle,
         userImage: req.user.imageUrl
     };
+
+    // update EXP
+    db.doc(`/users/${req.user.handle}`).get()
+    .then(doc => {
+        return doc.ref.update({ EXP: doc.data().EXP + 20});
+    });
 
     db.doc(`/recipes/${req.params.recipeId}`).get()
     .then(doc => {
@@ -273,6 +286,11 @@ exports.deleteRecipe = (req, res) => {
         if (doc.data().userHandle !== req.user.handle) {
             return res.status(403).json({ error: 'unauthorized'});
         } else {
+            // update EXP
+            db.doc(`/users/${doc.data().userHandle}`).get()
+            .then(doc => {
+                return doc.ref.update({ EXP: doc.data().EXP - 50});
+            });
             return document.delete();
         }
     })
@@ -296,6 +314,11 @@ exports.deleteComment = (req, res) => {
         if (doc.data().userHandle !== req.user.handle) {
             return res.status(403).json({ error: 'unauthorized'});
         } else {
+            // update EXP
+            db.doc(`/users/${doc.data().userHandle}`).get()
+            .then(doc => {
+                return doc.ref.update({ EXP: doc.data().EXP - 20});
+            });
             return document.delete();
         }
     })
